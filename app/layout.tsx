@@ -1,6 +1,6 @@
 import './globals.css';
-import { db } from '@/lib/db';
-import { getActiveCodes } from '@/lib/site';
+import { db } from '../lib/db';
+import { getActiveCodes } from '../lib/site';
 export const metadata={title:'CottonCrafted — Cities • Culture • Wearable Stories',description:'Premium cotton T-shirts inspired by Indian cities.'};
 export default async function RootLayout({children}:{children:React.ReactNode}){
  const nav=await db.navigationItem.findMany({where:{published:true},orderBy:{sortOrder:'asc'}}).catch(()=>[]);

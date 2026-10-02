@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { db } from '@/lib/db';
-import { whatsappUrl,generalWhatsAppMessage } from '@/lib/whatsapp';
+import { db } from '../lib/db';
+import { whatsappUrl,generalWhatsAppMessage } from '../lib/whatsapp';
 export default async function Home(){
  const [products,collections,testimonials,offer]=await Promise.all([db.product.findMany({where:{visibility:'PUBLISHED',featured:true},take:4,orderBy:{createdAt:'desc'}}),db.collection.findMany({where:{published:true},take:4,orderBy:{createdAt:'asc'}}),db.testimonial.findMany({where:{published:true},take:3}),db.offer.findFirst({where:{active:true,endDate:{gte:new Date()}},orderBy:{endDate:'asc'}})]);
  return <main>

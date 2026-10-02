@@ -1,4 +1,4 @@
-import {db} from '@/lib/db'; import {getSession} from '@/lib/auth'; import {body,err,ok} from '@/lib/api';
+import {db} from '../../../lib/db'; import {getSession} from '../../../lib/auth'; import {body,err,ok} from '../../../lib/api';
 export async function GET(){if(!(await getSession()))return err('Unauthorized',401);return ok(await db.lead.findMany({orderBy:{createdAt:'desc'}}))}
 export async function POST(r:Request){try{const b=await body(r);const l=await db.lead.create({data:{name:b.name,phone:b.phone,email:b.email,interestedProduct:b.interestedProduct,message:b.message,utmSource:b.utmSource,utmMedium:b.utmMedium,utmCampaign:b.utmCampaign,utmContent:b.utmContent,utmTerm:b.utmTerm}});await db.event.create({data:{name:'Lead',path:b.path,metadata:{product:b.interestedProduct}}});return ok(l,201)}catch(e:any){return err(e.message)}}
 export async function DELETE(r:Request){if(!(await getSession()))return err('Unauthorized',401);const id=new URL(r.url).searchParams.get('id')!;await db.lead.delete({where:{id}});return ok({ok:true})}

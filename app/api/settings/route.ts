@@ -1,2 +1,2 @@
-import {db} from '@/lib/db'; import {requireAdmin} from '@/lib/auth'; import {body,err,ok} from '@/lib/api';
+import {db} from '../../../lib/db'; import {requireAdmin} from '../../../lib/auth'; import {body,err,ok} from '../../../lib/api';
 export async function GET(){return ok(await db.siteSetting.findMany({orderBy:{key:'asc'}}))} export async function PUT(r:Request){try{await requireAdmin();const b=await body(r);const out=[];for(const x of b.settings||[]){out.push(await db.siteSetting.upsert({where:{key:x.key},update:{value:x.value},create:{key:x.key,value:x.value}}))}return ok(out)}catch(e:any){return err(e.message)}}
