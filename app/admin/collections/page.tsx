@@ -1,0 +1,1 @@
+import {db} from '@/lib/db'; import ResourceManager from '@/components/ResourceManager'; export default async function Page(){const items=await db.collection.findMany();return <ResourceManager kind="collections" initial={JSON.parse(JSON.stringify(items))}/>}

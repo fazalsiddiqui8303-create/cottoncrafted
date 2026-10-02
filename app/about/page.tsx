@@ -1,0 +1,1 @@
+export default function Page(){return <main className="container section"><div className="eyebrow">CottonCrafted</div><h1>About</h1><p className="story-copy">This page is editable through the CottonCrafted CMS. Replace this content from the admin page builder without changing source code.</p></main>}

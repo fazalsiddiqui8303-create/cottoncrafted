@@ -1,0 +1,1 @@
+import {db} from '@/lib/db'; import {body,ok} from '@/lib/api'; export async function POST(r:Request){const b=await body(r);const name=String(b.name||'PageView');await db.event.create({data:{name,path:b.path,metadata:b.metadata||{}}});return ok({ok:true})}

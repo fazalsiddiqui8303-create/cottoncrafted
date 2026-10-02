@@ -1,0 +1,2 @@
+import {db} from '@/lib/db'; import bcrypt from 'bcryptjs'; import {createSession} from '@/lib/auth'; import {body,err,ok} from '@/lib/api';
+export async function POST(req:Request){const b=await body(req);const u=await db.adminUser.findUnique({where:{email:String(b.email||'').toLowerCase()}});if(!u||!(await bcrypt.compare(String(b.password||''),u.passwordHash)))return err('Invalid credentials',401);await createSession(u.id);return ok({ok:true});}
