@@ -1,48 +1,184 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+generator client {
+  provider = "prisma-client-js"
+}
 
-enum Visibility { DRAFT PUBLISHED }
-enum StockStatus { IN_STOCK OUT_OF_STOCK LOW_STOCK }
-enum CodeLocation { HEAD BODY_START BODY_END GLOBAL }
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Visibility {
+  DRAFT
+  PUBLISHED
+}
+
+enum StockStatus {
+  IN_STOCK
+  OUT_OF_STOCK
+  LOW_STOCK
+}
+
+enum CodeLocation {
+  HEAD
+  BODY_START
+  BODY_END
+  GLOBAL
+}
 
 model Product {
-  id String @id @default(cuid())
-  name String
-  slug String @unique
+  id              String       @id @default(cuid())
+  name            String
+  slug            String       @unique
   shortDescription String?
+  description     String?
+  images          Json         @default("[]")
+  price           Int
+  salePrice       Int?
+  sku             String?      @unique
+  tags            Json         @default("[]")
+  sizes           Json         @default("[]")
+  colours         Json         @default("[]")
+  stockStatus     StockStatus  @default(IN_STOCK)
+  featured        Boolean      @default(false)
+  visibility      Visibility   @default(PUBLISHED)
+  seoTitle        String?
+  seoDescription  String?
+  ogImage         String?
+  canonicalUrl    String?
+  categoryId      String?
+  collectionId    String?
+  category        Category?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  collection      Collection?  @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+  customCodes     CustomCode[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
   description String?
-  images Json @default("[]")
-  price Int
-  salePrice Int?
-  sku String? @unique
-  tags Json @default("[]")
-  sizes Json @default("[]")
-  colours Json @default("[]")
-  stockStatus StockStatus @default(IN_STOCK)
-  featured Boolean @default(false)
-  visibility Visibility @default(PUBLISHED)
-  seoTitle String?
+  image       String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Collection {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  image       String?
+  published   Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Page {
+  id             String       @id @default(cuid())
+  title          String
+  slug           String       @unique
+  heroImage      String?
+  content        Json         @default("[]")
+  seoTitle       String?
   seoDescription String?
-  ogImage String?
-  canonicalUrl String?
-  categoryId String?
-  collectionId String?
-  category Category? @relation(fields:[categoryId], references:[id], onDelete:SetNull)
-  collection Collection? @relation(fields:[collectionId], references:[id], onDelete:SetNull)
-  customCodes CustomCode[]
-  createdAt DateTime @default(now())
+  ogImage        String?
+  canonicalUrl   String?
+  published      Boolean      @default(true)
+  customCodes    CustomCode[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Offer {
+  id             String   @id @default(cuid())
+  name           String
+  discountType   String
+  discountAmount Int
+  code           String?
+  startDate      DateTime
+  endDate        DateTime
+  bannerText     String?
+  cta            String?
+  active         Boolean  @default(true)
+  productIds     Json     @default("[]")
+  categoryIds    Json     @default("[]")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Testimonial {
+  id           String   @id @default(cuid())
+  customerName String
+  review       String
+  image        String?
+  rating       Int      @default(5)
+  published    Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Lead {
+  id                String   @id @default(cuid())
+  name              String
+  phone             String
+  email             String?
+  interestedProduct String?
+  message           String?
+  utmSource         String?
+  utmMedium         String?
+  utmCampaign       String?
+  utmContent        String?
+  utmTerm           String?
+  createdAt         DateTime @default(now())
+}
+
+model NavigationItem {
+  id         String   @id @default(cuid())
+  label      String
+  href       String
+  sortOrder  Int      @default(0)
+  published  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model CustomCode {
+  id         String      @id @default(cuid())
+  name       String
+  location   CodeLocation
+  code       String
+  enabled    Boolean     @default(true)
+  pageId     String?
+  productId  String?
+  page       Page?       @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  product    Product?    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
   updatedAt DateTime @updatedAt
 }
 
-model Category { id String @id @default(cuid()); name String; slug String @unique; description String?; image String?; products Product[]; createdAt DateTime @default(now()); updatedAt DateTime @updatedAt }
-model Collection { id String @id @default(cuid()); name String; slug String @unique; description String?; image String?; published Boolean @default(true); products Product[]; createdAt DateTime @default(now()); updatedAt DateTime @updatedAt }
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
 
-model Page { id String @id @default(cuid()); title String; slug String @unique; heroImage String?; content Json @default("[]"); seoTitle String?; seoDescription String?; ogImage String?; canonicalUrl String?; published Boolean @default(true); customCodes CustomCode[]; createdAt DateTime @default(now()); updatedAt DateTime @updatedAt }
-model Offer { id String @id @default(cuid()); name String; discountType String; discountAmount Int; code String?; startDate DateTime; endDate DateTime; bannerText String?; cta String?; active Boolean @default(true); productIds Json @default("[]"); categoryIds Json @default("[]"); createdAt DateTime @default(now()); updatedAt DateTime @updatedAt }
-model Testimonial { id String @id @default(cuid()); customerName String; review String; image String?; rating Int @default(5); published Boolean @default(true); createdAt DateTime @default(now()); updatedAt DateTime @updatedAt }
-model Lead { id String @id @default(cuid()); name String; phone String; email String?; interestedProduct String?; message String?; utmSource String?; utmMedium String?; utmCampaign String?; utmContent String?; utmTerm String?; createdAt DateTime @default(now()) }
-model NavigationItem { id String @id @default(cuid()); label String; href String; sortOrder Int @default(0); published Boolean @default(true); createdAt DateTime @default(now()); updatedAt DateTime @updatedAt }
-model CustomCode { id String @id @default(cuid()); name String; location CodeLocation; code String; enabled Boolean @default(true); pageId String?; productId String?; page Page? @relation(fields:[pageId], references:[id], onDelete:Cascade); product Product? @relation(fields:[productId], references:[id], onDelete:Cascade); createdAt DateTime @default(now()); updatedAt DateTime @updatedAt }
-model SiteSetting { id String @id @default(cuid()); key String @unique; value Json; updatedAt DateTime @updatedAt }
-model AdminUser { id String @id @default(cuid()); email String @unique; passwordHash String; createdAt DateTime @default(now()); updatedAt DateTime @updatedAt }
-model Event { id String @id @default(cuid()); name String; path String?; metadata Json @default("{}"); createdAt DateTime @default(now()) }
+model Event {
+  id        String   @id @default(cuid())
+  name      String
+  path      String?
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+}
