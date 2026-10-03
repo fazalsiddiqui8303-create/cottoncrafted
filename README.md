@@ -62,3 +62,4 @@ npm run preview
 ## Notes
 
 The exact CottonCrafted logo is stored at `public/logo.png` and used across the site. Product images are currently URL-based; the `/api/upload` route is intentionally an integration point for connecting Cloudflare R2, Supabase Storage, or S3 later.
+Cloudflare deployment trigger
