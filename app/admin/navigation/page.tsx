@@ -1,1 +1,2 @@
+export const dynamic = 'force-dynamic';
 import {db} from '../../../lib/db'; import ResourceManager from '../../../components/ResourceManager'; export default async function Page(){const items=await db.navigationItem.findMany({orderBy:{sortOrder:'asc'}});return <ResourceManager kind="navigation" initial={JSON.parse(JSON.stringify(items))}/>}

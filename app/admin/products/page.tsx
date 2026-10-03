@@ -1,1 +1,2 @@
+export const dynamic = 'force-dynamic';
 import {db} from '../../../lib/db'; import ProductsClient from './ui'; export default async function Products(){const [products,cats,cols]=await Promise.all([db.product.findMany({include:{category:true,collection:true},orderBy:{createdAt:'desc'}}),db.category.findMany({orderBy:{name:'asc'}}),db.collection.findMany({orderBy:{name:'asc'}})]);return <ProductsClient initial={JSON.parse(JSON.stringify(products))} categories={cats} collections={cols}/>}
