@@ -5,6 +5,9 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  // Prisma 6.x requires a datasource URL in schema.prisma for CLI validation.
+  // The application runtime uses PrismaPg with process.env.DATABASE_URL.
+  url      = "postgresql://placeholder:placeholder@127.0.0.1:5432/placeholder"
 }
 
 enum Visibility {
